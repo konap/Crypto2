@@ -3,6 +3,15 @@
 import re
 from collections import Counter
 
+Frequen = {'ъ': 0.00013830785331953106, 'э': 0.0008997139736559186, 'ф': 0.0027782768267330545, 'щ': 0.0030242366689765504,
+             'ц': 0.005840298630894838, 'ю': 0.00650474666849176, 'ш': 0.00790065788910847, 'ж': 0.009028508528033719,
+             'ч': 0.009090533183903817, 'й': 0.010245475051829798, 'х': 0.01124713759777795,
+             'ь': 0.01570150598716161, 'з': 0.016815811011586492, 'б': 0.01707175183293552,
+             'ы': 0.019110723278780155, 'я': 0.02011737631428107, 'г': 0.022619037434375062, 'у': 0.02482697259793479,
+             'п': 0.02533885424063285, 'к': 0.026031106434309472, 'м': 0.03279464563246613, 'д': 0.0363293380899828,
+             'р': 0.040220494086982805, 'л': 0.04666535488084137, 'в': 0.05032908713965101, 'т': 0.052996147342065265,
+             'н': 0.05412542383514844, 'с': 0.057152512212440866, 'а': 0.07837777720743612, 'е': 0.08712040197680421,
+             'и': 0.09196402855130366, 'о': 0.11031120692851053}
 
 alphabet = {'а': 0, 'б': 1, 'в': 2, 'г': 3, 'д': 4, 'е': 5, 'ж': 6,
             'з': 7, 'и': 8, 'й': 9, 'к': 10, 'л': 11, 'м': 12,
@@ -89,14 +98,15 @@ def decode_val(list_in):
 
 
 def FindLenKey(text):
-    compr = [None] * 18
-    for (shift) in range(18):
+    compr = [None] * 34
+    for (shift) in range(34):
         counter = 0
         for i in range(len(text) - shift):
             if (text[i] == text[i + shift]):
                # print('On shift=', shift, ' ', text[i], text[i + shift])
                 counter += 1
                 compr[shift] = counter
+      #  print('Index:', shift, '=', compr[shift])
     compr[0]=0
     print (compr)
     return (compr.index(max(compr)))
@@ -143,7 +153,6 @@ def Blocks(text, keylen):
 
 
 def KeyValue (Blocks, keylen):
-
     KeyValue = [None]*keylen
     for i in range(keylen):
         text = Blocks[i]
@@ -152,8 +161,28 @@ def KeyValue (Blocks, keylen):
         #print(i, '=', alphabet.get(keywithmaxval(letterfrequency)))
         #print("Frequency Letter in text: ",i,  sorted(letterfrequency.items(), key=operator.itemgetter(1)))
         KeyValue[i]=((alphabet.get(keywithmaxval(letterfrequency))-14) % 32)
-        letterfrequency = {}
     return (KeyValue)
+
+def Index(text):
+    compr = [None] * 32
+    for (shift) in range(32):
+        counter = 0
+        for i in range(len(text) - shift):
+            if (text[i] == text[i + shift]):
+                # print('On shift=', shift, ' ', text[i], text[i + shift])
+                counter += 1
+                compr[shift] = counter / len(text)
+    #    print ('Index:', shift, '=', compr[shift])
+    print(compr)
+    return (compr.index(max(compr)))
+
+def M (text, i):
+    sum = 0
+    for j in range (len(text)):
+       # print (Frequen.get(text[j]),'*', (word.count(text[i+j])))
+        sum += Frequen.get(text[j]) * (word.count(text[(i+j)%32]))
+       # print  (sum)
+    return sum
 
 if __name__ == '__main__':
     f = open('Sifr.txt', 'r')
@@ -161,12 +190,16 @@ if __name__ == '__main__':
     word = re.sub('[qwertyuiopasdfghjklzxcvbnm.,;0123456789_&?/\n"=<>=()!*]', '', words)
     a = FindLenKey(word)
     print ('Len Key', a)
+    #b = FindLenKey(word)
+    #c = Index2(b)
+   # print('Index', textlen)
 
 
-
+    print('a = ', word.count('а'))
    # print(alphabet.get(key1))
     Tex = Blocks(word, a)
-
+    for i in range(17):
+         print('Stesp #',i, M(Tex[i], i))
     Key = KeyValue(Tex, a)
     print (Key)
     # [2, 5, 13, 5, 22, 8, 0, 13, 17, 10, 8, 9, 10, 19, 6, 28, 22] => [2, 5, 13, 5, 22, 8, 0, 13, 17, 10, 8, 9, 10, 19, 15, 5, 22]
